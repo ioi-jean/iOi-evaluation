@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playing for a Fairer Future — Evaluation Plan</title>
+<style>
+  :root {
+    --tan: #D0C8BB;
+    --yellow: #FFC030;
+    --blue: #00ABD8;
+    --red: #E4101B;
+    --purple: #595696;
+    --pink: #F7BCCB;
+    --orange: #F37D25;
+    --brown: #85746E;
+    --teal: #009A78;
+
+    --paper: #FBF8F3;
+    --panel: #F3EEE5;
+    --ink: #2A2521;
+    --ink-soft: #5B5450;
+
+    --font: Verdana, Geneva, sans-serif;
+    --radius: 20px;
+    --maxw: 960px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+  }
+
+  a { color: inherit; }
+  :focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 2px;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Top region switcher ---------- */
+  .topbar {
+    background: var(--paper);
+    border-bottom: 1px solid rgba(42,37,33,0.08);
+    padding: 14px 0;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .brand { font-weight: 700; font-size: 0.98rem; cursor: pointer; }
+  nav.switcher { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+  nav.switcher button {
+    font-family: var(--font);
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: 600;
+    font-size: 0.86rem;
+    color: #241f1c;
+    padding: 8px 15px 8px 13px;
+    border-radius: 999px;
+    background: var(--panel);
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  nav.switcher button .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(0,0,0,0.25); }
+  nav.switcher button:hover { transform: translateY(-2px); }
+  nav.switcher button[data-p="overview"] { background: var(--teal); color: #fff; }
+  nav.switcher button[data-p="overview"] .dot { background: rgba(255,255,255,0.65); }
+  nav.switcher button[data-p="tower-hamlets"] { background: var(--red); color: #fff; }
+  nav.switcher button[data-p="tower-hamlets"] .dot { background: rgba(255,255,255,0.65); }
+  nav.switcher button[data-p="west-belfast"] { background: var(--purple); color: #fff; }
+  nav.switcher button[data-p="west-belfast"] .dot { background: rgba(255,255,255,0.65); }
+  nav.switcher button[data-p="doncaster"] { background: var(--yellow); color: #241f1c; }
+  nav.switcher button.active { opacity: 1; box-shadow: 0 0 0 2px rgba(42,37,33,0.55) inset; }
+  nav.switcher button:not(.active) { opacity: 0.82; }
+
+  .page { display: none; }
+  .page.active { display: block; animation: rise 0.4s ease; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0); } }
+
+  /* ---------- Hero ---------- */
+  header.hero {
+    background: var(--panel);
+    border-bottom: 1px solid rgba(42,37,33,0.08);
+    padding: 56px 0 40px;
+  }
+  header.hero.region { background: var(--region-tint, var(--panel)); }
+
+  .eyebrow {
+    font-size: 0.95rem;
+    color: var(--teal);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  header.hero.region .eyebrow { color: var(--region-color, var(--teal)); }
+
+  h1 {
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    font-weight: 700;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-intro {
+    max-width: 62ch;
+    font-size: 1.08rem;
+    color: var(--ink-soft);
+    margin: 0 0 34px;
+  }
+
+  nav.cycle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0;
+    list-style: none;
+    margin: 0;
+  }
+  nav.cycle button, nav.cycle a {
+    font-family: var(--font);
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.98rem;
+    color: #241f1c;
+    padding: 10px 18px 10px 16px;
+    border-radius: 999px;
+    background: var(--stage-color, var(--teal));
+    opacity: 0;
+    animation: enter 0.5s ease forwards;
+    transition: transform 0.15s ease;
+  }
+  nav.cycle button:hover, nav.cycle a:hover { transform: translateY(-2px); }
+  nav.cycle .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.65); }
+  nav.cycle button:nth-child(1), nav.cycle a:nth-child(1) { animation-delay: 0.02s; }
+  nav.cycle button:nth-child(2), nav.cycle a:nth-child(2) { animation-delay: 0.09s; }
+  nav.cycle button:nth-child(3), nav.cycle a:nth-child(3) { animation-delay: 0.16s; }
+  nav.cycle button:nth-child(4), nav.cycle a:nth-child(4) { animation-delay: 0.23s; }
+  nav.cycle button:nth-child(5), nav.cycle a:nth-child(5) { animation-delay: 0.30s; }
+  @keyframes enter { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0); } }
+
+  /* ---------- Section scaffolding ---------- */
+  section { padding: 56px 0; }
+  section + section { border-top: 1px solid rgba(42,37,33,0.08); }
+
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 1.9rem);
+    font-weight: 700;
+    margin: 0 0 10px;
+  }
+  .section-lede {
+    color: var(--ink-soft);
+    max-width: 68ch;
+    margin: 0 0 32px;
+  }
+
+  /* ---------- Stat row ---------- */
+  .statrow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 10px;
+  }
+  .statrow div {
+    background: var(--paper);
+    border-radius: var(--radius);
+    padding: 20px 18px;
+  }
+  .statrow strong { display: block; font-size: 1.55rem; font-weight: 700; color: var(--teal); }
+  .statrow span { font-size: 0.82rem; color: var(--ink-soft); }
+  @media (max-width: 700px) { .statrow { grid-template-columns: repeat(2, 1fr); } }
+
+  /* ---------- Toolkit table ---------- */
+  .toolkit-scroll { overflow-x: auto; border-radius: var(--radius); }
+  table.toolkit {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+    background: var(--panel);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  table.toolkit th, table.toolkit td {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 0.95rem;
+  }
+  table.toolkit thead th {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+    border-bottom: 2px solid rgba(42,37,33,0.1);
+  }
+  table.toolkit thead th.th-col { color: var(--red); }
+  table.toolkit thead th.wb-col { color: var(--purple); }
+  table.toolkit thead th.dn-col { color: #B27F00; }
+  table.toolkit tbody th {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  table.toolkit tbody tr + tr th, table.toolkit tbody tr + tr td {
+    border-top: 1px solid rgba(42,37,33,0.08);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 26px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .chip.yes { background: var(--teal); color: #fff; }
+  .chip.adapt { background: var(--orange); color: #fff; }
+  .chip.no { color: var(--ink-soft); }
+  .qual-note { font-size: 0.86rem; color: var(--ink-soft); }
+  .note {
+    margin-top: 18px;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    border-left: 3px solid var(--orange);
+    padding-left: 14px;
+  }
+  .note strong { color: var(--ink); }
+
+  /* ---------- Imagination Cycle stage cards ---------- */
+  .journey { position: relative; }
+  .stage {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: 28px;
+    border-radius: var(--radius);
+    padding: 30px 28px;
+    margin-bottom: 20px;
+    color: #241f1c;
+  }
+  .stage[data-stage="choose"] { background: var(--red); color: #fff; }
+  .stage[data-stage="ask"] { background: var(--yellow); }
+  .stage[data-stage="build"] { background: var(--blue); color: #fff; }
+  .stage[data-stage="do"] { background: var(--purple); color: #fff; }
+  .stage[data-stage="show"] { background: var(--pink); }
+
+  .stage-name { font-size: 1.6rem; font-weight: 700; margin: 0 0 10px; }
+  .stage-quotes { font-size: 0.98rem; margin: 0; opacity: 0.92; }
+  .stage-quotes span { display: block; margin-bottom: 4px; }
+  .stage-body p { margin: 0; font-size: 0.94rem; }
+
+  @media (max-width: 720px) { .stage { grid-template-columns: 1fr; } }
+
+  /* ---------- Region cards (mirrors YMitD week-card) ---------- */
+  .region-card {
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 28px 28px 26px;
+    margin-bottom: 22px;
+    border-left: 8px solid var(--teal);
+  }
+  .region-card[data-tone="th"] { border-left-color: var(--red); }
+  .region-card[data-tone="wb"] { border-left-color: var(--purple); }
+  .region-card[data-tone="dn"] { border-left-color: var(--yellow); }
+
+  .region-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 6px; }
+  .region-head h3 { margin: 0; font-size: 1.25rem; font-weight: 700; }
+  .flex-tag {
+    font-size: 0.78rem; font-weight: 600; color: #fff;
+    background: var(--teal); padding: 5px 12px; border-radius: 999px; white-space: nowrap;
+  }
+  .region-card[data-tone="th"] .flex-tag { background: var(--red); }
+  .region-card[data-tone="wb"] .flex-tag { background: var(--purple); }
+  .region-card[data-tone="dn"] .flex-tag { background: var(--orange); }
+
+  .region-sub { margin: 0 0 16px; color: var(--ink-soft); font-style: italic; font-size: 0.95rem; }
+  .region-block { margin-bottom: 14px; }
+  .region-block:last-child { margin-bottom: 0; }
+  .region-block h4 { margin: 0 0 6px; font-size: 0.85rem; font-weight: 600; color: var(--brown); }
+  .region-block p, .region-block ul { margin: 0; font-size: 0.96rem; }
+  .region-block ul { padding-left: 18px; }
+  .region-block li { margin-bottom: 4px; }
+
+  .backlink {
+    font-family: var(--font);
+    background: none; border: none; cursor: pointer; padding: 0;
+    font-size: 0.9rem; font-weight: 600; color: var(--teal); margin-bottom: 18px;
+  }
+
+  .prevnext { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding-top: 8px; }
+  .prevnext button {
+    font-family: var(--font); font-weight: 700; font-size: 0.92rem; border: none; cursor: pointer;
+    padding: 12px 20px; border-radius: 999px; background: var(--panel); color: var(--ink);
+  }
+  .prevnext button:hover { background: var(--tan); }
+
+  footer { padding: 40px 0 60px; text-align: center; }
+  footer p { max-width: 60ch; margin: 0 auto; color: var(--ink-soft); font-size: 0.95rem; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="brand" onclick="go('overview')">Playing for a Fairer Future</span>
+    <nav class="switcher">
+      <button data-p="overview" onclick="go('overview')"><span class="dot"></span>Overview</button>
+      <button data-p="tower-hamlets" onclick="go('tower-hamlets')"><span class="dot"></span>Tower Hamlets</button>
+      <button data-p="west-belfast" onclick="go('west-belfast')"><span class="dot"></span>West Belfast</button>
+      <button data-p="doncaster" onclick="go('doncaster')"><span class="dot"></span>Doncaster</button>
+    </nav>
+  </div>
+</div>
+
+<!-- ================= OVERVIEW ================= -->
+<div class="page active" id="page-overview">
+
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">iOi evaluation guide</p>
+      <h1>Playing for a Fairer Future</h1>
+      <p class="hero-intro">
+        A five-year, National Lottery–funded evaluation plan across three live regions —
+        Tower Hamlets, West Belfast and Doncaster — sharing one Imagination Cycle and
+        one core toolkit, adapted to each place, partner and age group.
+      </p>
+      <div class="statrow">
+        <div><strong>50,000+</strong><span>children reached by 2031</span></div>
+        <div><strong>28,000</strong><span>parents &amp; carers engaged</span></div>
+        <div><strong>5</strong><span>UK regions (2 to be confirmed)</span></div>
+        <div><strong>£2.46m</strong><span>National Lottery Community Fund</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section id="toolkit">
+    <div class="wrap">
+      <h2>The toolkit, by region</h2>
+      <p class="section-lede">
+        Tower Hamlets and Doncaster's primary-age children take the full self-report
+        toolkit. West Belfast works with 0–4s, so BRCG choose their own outcome tool
+        from a menu iOi offers, tracked through a shared spreadsheet — see the West
+        Belfast page for how.
+      </p>
+      <div class="toolkit-scroll">
+        <table class="toolkit">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col" class="th-col">Tower Hamlets</th>
+              <th scope="col" class="wb-col">West Belfast</th>
+              <th scope="col" class="dn-col">Doncaster</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">DAT form</th>
+              <td><span class="chip yes">Yes</span></td>
+              <td><span class="chip adapt">Partner-chosen</span></td>
+              <td><span class="chip yes">Yes</span></td>
+            </tr>
+            <tr>
+              <th scope="row">5-question confidence survey / NPS / LEGO Children Tool</th>
+              <td><span class="qual-note">Confidence survey</span></td>
+              <td><span class="chip adapt">Partner-chosen</span></td>
+              <td><span class="qual-note">Confidence survey</span></td>
+            </tr>
+            <tr>
+              <th scope="row">Facilitator / practitioner observation</th>
+              <td><span class="chip yes">Yes</span></td>
+              <td><span class="chip yes">Yes</span></td>
+              <td><span class="chip yes">Yes</span></td>
+            </tr>
+            <tr>
+              <th scope="row">Co-designed child &amp; carer voice work</th>
+              <td><span class="chip yes">Yes</span></td>
+              <td><span class="chip yes">Yes</span></td>
+              <td><span class="chip yes">Yes</span></td>
+            </tr>
+            <tr>
+              <th scope="row">Practitioner / mentor training survey</th>
+              <td><span class="chip no">—</span></td>
+              <td><span class="chip yes">Yes</span></td>
+              <td><span class="chip yes">Yes</span></td>
+            </tr>
+            <tr>
+              <th scope="row">Easy Peasy app reach &amp; engagement tracking</th>
+              <td><span class="chip no">—</span></td>
+              <td><span class="chip yes">Yes</span></td>
+              <td><span class="chip no">—</span></td>
+            </tr>
+            <tr>
+              <th scope="row">Spreadsheet tracker (quant. + qual.), monthly check-in</th>
+              <td><span class="chip no">—</span></td>
+              <td><span class="chip yes">Yes</span></td>
+              <td><span class="chip no">—</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note"><strong>Why West Belfast differs:</strong> BRCG choose their own outcome-tracking tool from a menu iOi offers — DAT, Net Promoter Score, or the LEGO Children Tool — logged in a shared spreadsheet tracker alongside quantitative delivery/reach data and qualitative co-design and child-voice evidence, reviewed at a monthly check-in.</p>
+    </div>
+  </section>
+
+  <section id="cycle">
+    <div class="wrap">
+      <h2>One Imagination Cycle, three places</h2>
+      <p class="section-lede">
+        Every region measures children moving through the same five-stage cycle of
+        voice and agency — the activity, age group and tools differ, the cycle doesn't.
+      </p>
+      <div class="journey">
+        <div class="stage" data-stage="choose">
+          <div>
+            <p class="stage-name">Choose</p>
+            <p class="stage-quotes"><span>&ldquo;You choose, we listen and follow your lead&rdquo;</span></p>
+          </div>
+          <div class="stage-body"><p>Children make real decisions about what happens next in a session.</p></div>
+        </div>
+        <div class="stage" data-stage="ask">
+          <div>
+            <p class="stage-name">Ask</p>
+            <p class="stage-quotes"><span>&ldquo;We ask, because your ideas matter to us&rdquo;</span></p>
+          </div>
+          <div class="stage-body"><p>Children are listened to — their questions and interests shape what comes next.</p></div>
+        </div>
+        <div class="stage" data-stage="build">
+          <div>
+            <p class="stage-name">Build</p>
+            <p class="stage-quotes"><span>&ldquo;We build it together, your ideas in our hands&rdquo;</span></p>
+          </div>
+          <div class="stage-body"><p>They create something themselves through hands-on, playful making.</p></div>
+        </div>
+        <div class="stage" data-stage="do">
+          <div>
+            <p class="stage-name">Do</p>
+            <p class="stage-quotes"><span>&ldquo;We do it, turning your ideas into action&rdquo;</span></p>
+          </div>
+          <div class="stage-body"><p>They act on their choices and see an idea through to a result.</p></div>
+        </div>
+        <div class="stage" data-stage="show">
+          <div>
+            <p class="stage-name">Show</p>
+            <p class="stage-quotes"><span>&ldquo;We show you the difference you've made&rdquo;</span></p>
+          </div>
+          <div class="stage-body"><p>They share what they made and learned, and are heard by others.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="regions">
+    <div class="wrap">
+      <h2>Explore each region's evaluation plan</h2>
+      <p class="section-lede">Delivery model, age group and partner differ in each place — the detail behind each region's row in the toolkit table above.</p>
+      <nav class="cycle" aria-label="Regions">
+        <button data-stage="choose" onclick="go('tower-hamlets')"><span class="dot"></span>Tower Hamlets</button>
+        <button data-stage="do" onclick="go('west-belfast')"><span class="dot"></span>West Belfast</button>
+        <button data-stage="ask" onclick="go('doncaster')"><span class="dot"></span>Doncaster</button>
+      </nav>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p>Institute of Imagination — Playing for a Fairer Future, funded by National Lottery players via The National Lottery Community Fund's UK Fund. Each region feeds a shared learning network, best-practice platform and annual event, building the evidence for national policy.</p>
+    </div>
+  </footer>
+</div>
+
+<!-- ================= TOWER HAMLETS ================= -->
+<div class="page" id="page-tower-hamlets">
+  <header class="hero region" style="--region-tint:#FBEAE7; --region-color:var(--red);">
+    <div class="wrap">
+      <button class="backlink" onclick="go('overview')">← Back to overview</button>
+      <p class="eyebrow">London</p>
+      <h1>Tower Hamlets</h1>
+      <p class="hero-intro">
+        Where Power of Play began. Built on existing hub-school relationships and a
+        consortium of Young V&amp;A, Easy Peasy, Save the Children and Ambition Aspire
+        Achieve — now the programme's centre for learning and best-practice sharing.
+      </p>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <h2>A 500-child longitudinal study</h2>
+      <p class="section-lede">
+        500 children aged 8–11, and their parents and carers, are followed over the
+        life of the programme to show what sustained access to creative play does
+        over time — not just in a single block of sessions. Children and carers also
+        co-design new ways to have their views on learning-through-play heard.
+      </p>
+
+      <article class="region-card" data-tone="th">
+        <div class="region-head">
+          <h3>Baseline — before Year 1</h3>
+          <span class="flex-tag">Full toolkit</span>
+        </div>
+        <p class="region-sub">All 500 children, plus a parent/carer survey, before their first year of sessions.</p>
+        <div class="region-block">
+          <h4>Measures</h4>
+          <p>DAT form, 5-question confidence survey, and facilitator observation with every child; an accompanying survey for parents and carers.</p>
+        </div>
+      </article>
+
+      <article class="region-card" data-tone="th">
+        <div class="region-head">
+          <h3>Each year of the programme</h3>
+          <span class="flex-tag">Repeat toolkit</span>
+        </div>
+        <p class="region-sub">The same 500 children, tracked annually.</p>
+        <div class="region-block">
+          <h4>Measures</h4>
+          <p>DAT form, confidence survey and facilitator observation repeated at the end of each year's block, alongside co-designed qualitative voice methods with children and carers.</p>
+        </div>
+        <div class="region-block">
+          <h4>Things to consider</h4>
+          <p>Because change is measured against the same cohort every year, attrition matters — track and report drop-off, and note where a child's circumstances (school move, family change) might explain a dip independent of the programme.</p>
+        </div>
+      </article>
+
+      <article class="region-card" data-tone="th">
+        <div class="region-head">
+          <h3>Programme end — Year 5</h3>
+          <span class="flex-tag">Longitudinal comparison</span>
+        </div>
+        <p class="region-sub">The headline evidence for the national policy case.</p>
+        <div class="region-block">
+          <h4>Measures</h4>
+          <p>Full five-year comparison against baseline across all measures, plus the child/carer-designed voice tools trialled here and offered on to Doncaster and, in adapted form, West Belfast.</p>
+        </div>
+      </article>
+
+      <div class="prevnext">
+        <button onclick="go('overview')">← Overview</button>
+        <button onclick="go('west-belfast')">West Belfast →</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= WEST BELFAST ================= -->
+<div class="page" id="page-west-belfast">
+  <header class="hero region" style="--region-tint:#EFEDF9; --region-color:var(--purple);">
+    <div class="wrap">
+      <button class="backlink" onclick="go('overview')">← Back to overview</button>
+      <p class="eyebrow">Northern Ireland</p>
+      <h1>West Belfast</h1>
+      <p class="hero-intro">
+        Delivered with Blackie River Community Groups (BRCG), a Sure Start provider
+        working with 0–4 year olds and their parents in West Belfast.
+      </p>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <h2>Building local capacity from the ground up</h2>
+      <p class="section-lede">
+        Year one trains local early years practitioners in iOi's co-creation approach,
+        delivers 3 Days of Play in BRCG's centres, and stands up a West Belfast
+        co-design group; BRCG staff then take over delivery themselves. The Easy
+        Peasy app extends playful home-learning to 1,000 families, and the approach
+        extends to rural partners and into policy conversations as the co-design
+        group is supported to advocate.
+      </p>
+
+      <article class="region-card" data-tone="wb">
+        <div class="region-head">
+          <h3>Practitioners</h3>
+          <span class="flex-tag">Train the trainer</span>
+        </div>
+        <p class="region-sub">Early years practitioners trained in iOi's co-creation and learning approach.</p>
+        <div class="region-block">
+          <h4>Measures</h4>
+          <p>Numbers of practitioners trained, tracked in the shared spreadsheet tracker; iOi runs train-the-trainer sessions and shares iOi techniques and toolkits to support it.</p>
+        </div>
+      </article>
+
+      <article class="region-card" data-tone="wb">
+        <div class="region-head">
+          <h3>Days of Play &amp; co-design group</h3>
+          <span class="flex-tag">Partner-chosen tool</span>
+        </div>
+        <p class="region-sub">3 Days of Play in year one, plus a new West Belfast co-design group.</p>
+        <div class="region-block">
+          <h4>Measures</h4>
+          <p>BRCG selects an outcome-tracking tool that fits early years — DAT, Net Promoter Score, or the LEGO Children Tool — alongside a child-voice tracker to understand levels of child voice gathered, and a log of co-design sessions run.</p>
+        </div>
+        <div class="region-block">
+          <h4>Things to consider</h4>
+          <p>iOi is deliberately not prescribing a single tool here — the reporting guidance asks BRCG what they already ask parents/carers and children, and whether a digital observation tool already exists, so the method fits early years rather than being ported straight from Tower Hamlets.</p>
+        </div>
+      </article>
+
+      <article class="region-card" data-tone="wb">
+        <div class="region-head">
+          <h3>Easy Peasy app</h3>
+          <span class="flex-tag">Reach tracking</span>
+        </div>
+        <p class="region-sub">Up to 1,000 families reached at home.</p>
+        <div class="region-block">
+          <h4>Measures</h4>
+          <p>Easy Peasy engagement numbers, logged in the spreadsheet tracker alongside the other quantitative delivery and reach figures.</p>
+        </div>
+      </article>
+
+      <article class="region-card" data-tone="wb">
+        <div class="region-head">
+          <h3>Rural extension &amp; policy influence</h3>
+          <span class="flex-tag">Later in Year 1+</span>
+        </div>
+        <p class="region-sub">Extending reach to rural partners, and supporting the co-design group to advocate with policy-makers.</p>
+        <div class="region-block">
+          <h4>Measures</h4>
+          <p>Same reporting approach applied as reach extends into rural communities; planning and co-creation for further years brings in parents, carers and policy-makers directly.</p>
+        </div>
+      </article>
+
+      <article class="region-card" data-tone="wb">
+        <div class="region-head">
+          <h3>Reporting rhythm</h3>
+          <span class="flex-tag">Monthly check-in</span>
+        </div>
+        <p class="region-sub">How progress gets back to iOi for National Lottery reporting.</p>
+        <div class="region-block">
+          <h4>Measures</h4>
+          <p>A shared spreadsheet tracker covers quantitative data (delivery, reach, engagement, outcomes) and qualitative data (co-design and child voice), reviewed with iOi at a monthly check-in alongside risks, challenges and successes.</p>
+        </div>
+      </article>
+
+      <div class="prevnext">
+        <button onclick="go('tower-hamlets')">← Tower Hamlets</button>
+        <button onclick="go('doncaster')">Doncaster →</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= DONCASTER ================= -->
+<div class="page" id="page-doncaster">
+  <header class="hero region" style="--region-tint:#FDF3DD; --region-color:#B27F00;">
+    <div class="wrap">
+      <button class="backlink" onclick="go('overview')">← Back to overview</button>
+      <p class="eyebrow">South Yorkshire</p>
+      <h1>Doncaster</h1>
+      <p class="hero-intro">
+        Delivered with Harrison College, a specialist Further Education provider for
+        students aged 16+ centred on inclusive education for students with SEN.
+      </p>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <h2>FE students become play mentors</h2>
+      <p class="section-lede">
+        Harrison College students deliver four Days of Play in local primary schools
+        and are trained to take on delivery independently. The co-design approach is
+        shared with FE students to help them engage more parents and carers, and the
+        model is showcased at Doncaster festivals and events, including TEDx and the
+        Remake Learning Festival.
+      </p>
+
+      <article class="region-card" data-tone="dn">
+        <div class="region-head">
+          <h3>FE mentors</h3>
+          <span class="flex-tag">Pre/post survey</span>
+        </div>
+        <p class="region-sub">Harrison College students across training and four Days of Play.</p>
+        <div class="region-block">
+          <h4>Measures</h4>
+          <p>Pre/post confidence &amp; skills survey, plus observation of their delivery once they're running sessions independently.</p>
+        </div>
+        <div class="region-block">
+          <h4>Things to consider</h4>
+          <p>Because Harrison College prioritises inclusive, SEN-centred education, observation and voice tools here should be reviewed against BRCG's and Tower Hamlets' co-design learning so they work for students with additional needs too.</p>
+        </div>
+      </article>
+
+      <article class="region-card" data-tone="dn">
+        <div class="region-head">
+          <h3>Primary children</h3>
+          <span class="flex-tag">Full toolkit</span>
+        </div>
+        <p class="region-sub">Children taking part in the four Days of Play.</p>
+        <div class="region-block">
+          <h4>Measures</h4>
+          <p>DAT form, 5-question confidence survey, qualitative voice evidence and facilitator observation — the same core toolkit used in Tower Hamlets.</p>
+        </div>
+      </article>
+
+      <article class="region-card" data-tone="dn">
+        <div class="region-head">
+          <h3>Festivals &amp; events</h3>
+          <span class="flex-tag">Reach &amp; engagement</span>
+        </div>
+        <p class="region-sub">TEDx, Remake Learning Festival and similar showcases.</p>
+        <div class="region-block">
+          <h4>Measures</h4>
+          <p>Reach and stakeholder engagement logged qualitatively wherever the approach is showcased publicly.</p>
+        </div>
+      </article>
+
+      <div class="prevnext">
+        <button onclick="go('west-belfast')">← West Belfast</button>
+        <button onclick="go('overview')">Back to overview →</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  function go(page){
+    document.querySelectorAll('.page').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelectorAll('nav.switcher button').forEach(function(b){ b.classList.remove('active'); });
+    var navBtn = document.querySelector('nav.switcher button[data-p="' + page + '"]');
+    if(navBtn) navBtn.classList.add('active');
+    window.scrollTo({top:0, behavior:'instant'});
+    history.replaceState(null, '', '#' + page);
+  }
+  var startPage = (location.hash || '#overview').replace('#','');
+  if(document.getElementById('page-' + startPage)){ go(startPage); } else { go('overview'); }
+</script>
+
+</body>
+</html>
