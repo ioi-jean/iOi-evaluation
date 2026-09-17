@@ -1,1 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frameworks — iOi Evaluation Hub</title>
+<style>
+  :root {
+    --tan: #D0C8BB;
+    --yellow: #FFC030;
+    --blue: #00ABD8;
+    --red: #E4101B;
+    --purple: #595696;
+    --pink: #F7BCCB;
+    --orange: #F37D25;
+    --brown: #85746E;
+    --teal: #009A78;
 
+    --paper: #FBF8F3;
+    --panel: #F3EEE5;
+    --ink: #2A2521;
+    --ink-soft: #5B5450;
+
+    --font: Verdana, Geneva, sans-serif;
+    --radius: 20px;
+    --maxw: 1040px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+  }
+
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  .backlink {
+    font-family: var(--font); background: none; border: none; cursor: pointer;
+    padding: 0; font-size: 0.9rem; font-weight: bold; color: var(--brown);
+    text-decoration: none; display: inline-block; margin-bottom: 18px;
+  }
+  .backlink:hover { text-decoration: underline; }
+
+  header.hero { background: var(--panel); border-bottom: 1px solid rgba(42,37,33,0.08); padding: 56px 0 40px; }
+  .eyebrow { font-size: 0.95rem; color: var(--brown); font-weight: bold; margin: 0 0 6px; }
+  h1 { font-size: clamp(2.1rem, 5vw, 3.1rem); font-weight: bold; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .hero-intro { max-width: 66ch; font-size: 1.08rem; color: var(--ink-soft); margin: 0 0 30px; }
+
+  /* ---------- Tabs ---------- */
+  nav.tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+  nav.tabs button {
+    font-family: var(--font); border: none; cursor: pointer; font-weight: bold; font-size: 0.92rem;
+    padding: 10px 18px; border-radius: 999px; background: #fff; color: var(--ink); opacity: 0.75;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  nav.tabs button:hover { transform: translateY(-2px); }
+  nav.tabs button.active { background: var(--brown); color: #fff; opacity: 1; }
+
+  main { padding: 48px 0 64px; }
+  .tabpanel { display: none; }
+  .tabpanel.active { display: block; animation: rise 0.4s ease; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  h2 { font-size: clamp(1.5rem, 3vw, 1.9rem); font-weight: bold; margin: 0 0 10px; }
+  h3 { font-size: 1.05rem; font-weight: bold; margin: 0 0 8px; }
+  .section-lede { color: var(--ink-soft); max-width: 72ch; margin: 0 0 30px; }
+  section + section { margin-top: 44px; padding-top: 44px; border-top: 1px solid rgba(42,37,33,0.08); }
+
+  /* ---------- Theory of Change flow ---------- */
+  .toc-band {
+    border-radius: var(--radius); padding: 26px 28px; color: #fff; margin-bottom: 16px;
+  }
+  .toc-band .band-label {
+    display: inline-block; font-size: 0.76rem; font-weight: bold; text-transform: uppercase;
+    letter-spacing: 0.04em; background: rgba(0,0,0,0.22); padding: 4px 12px; border-radius: 999px; margin-bottom: 12px;
+  }
+  .toc-band h3 { color: #fff; font-size: 1.2rem; margin-bottom: 10px; }
+  .toc-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 20px; }
+  .toc-band ul { margin: 0; padding-left: 18px; }
+  .toc-band li { margin-bottom: 4px; font-size: 0.95rem; }
+  .toc-band p.statement { font-size: 1.15rem; font-weight: bold; margin: 0; max-width: 60ch; }
+  .toc-band.need { background: var(--red); }
+  .toc-band.audiences { background: #C23A22; }
+  .toc-band.activities { background: var(--purple); }
+  .toc-band.vision { background: var(--teal); }
+  .toc-band.outputs { background: #0C8F73; }
+  .toc-band.outcomes-children { background: #D63384; }
+  .toc-band.outcomes-adults { background: var(--orange); }
+  .toc-band.mission { background: var(--brown); }
+  .toc-band.impact { background: #C79A1E; }
+  .toc-arrow { text-align: center; font-size: 1.4rem; color: var(--ink-soft); margin: 2px 0 16px; }
+
+  /* ---------- Pedagogy wheel ---------- */
+  .wheel-center {
+    text-align: center; background: var(--pink); border-radius: var(--radius); padding: 22px;
+    font-weight: bold; font-size: 1.1rem; margin-bottom: 24px;
+  }
+  .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap: 18px; }
+  .stage-card { border-radius: var(--radius); padding: 22px 22px 24px; background: var(--panel); border-top: 8px solid var(--stage-color, var(--teal)); }
+  .stage-card .stage-name { font-weight: bold; font-size: 1.15rem; color: var(--stage-color, var(--teal)); margin-bottom: 12px; }
+  .stage-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .stage-chip { font-size: 0.78rem; font-weight: bold; padding: 5px 12px; border-radius: 999px; }
+  .stage-chip.pedagogy { background: var(--orange); color: #fff; }
+  .stage-chip.voice { background: var(--teal); color: #fff; }
+  .stage-card blockquote {
+    margin: 14px 0 0; font-style: italic; font-size: 1rem; padding-left: 12px;
+    border-left: 4px solid var(--stage-color, var(--teal));
+  }
+  .layer-key { display: flex; flex-wrap: wrap; gap: 18px; margin: 22px 0 30px; font-size: 0.88rem; color: var(--ink-soft); }
+  .layer-key span.swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+  /* ---------- Impact strategy ---------- */
+  .consider-list { background: var(--panel); border-radius: var(--radius); padding: 26px 28px; margin: 24px 0 8px; }
+  .consider-list ul { margin: 0; padding-left: 20px; }
+  .consider-list li { margin-bottom: 8px; }
+
+  .roadmap { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 18px; margin-top: 10px; }
+  .roadmap-card { border-radius: var(--radius); padding: 24px 24px 22px; color: #fff; }
+  .roadmap-card h3 { color: #fff; margin-bottom: 12px; }
+  .roadmap-card ul { margin: 0; padding-left: 18px; }
+  .roadmap-card li { margin-bottom: 8px; font-size: 0.95rem; }
+  .roadmap-card.short { background: var(--teal); }
+  .roadmap-card.medium { background: var(--orange); }
+  .roadmap-card.long { background: var(--purple); }
+
+  footer { padding: 40px 0 60px; text-align: center; }
+  footer p { max-width: 60ch; margin: 0 auto; color: var(--ink-soft); font-size: 0.95rem; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <a class="backlink" href="index.html">← Back to Evaluation Hub</a>
+    <p class="eyebrow">iOi evaluation guide</p>
+    <h1>Frameworks</h1>
+    <p class="hero-intro">
+      The outcome indicators, measurement tools, and Theory of Change that sit
+      behind every iOi evaluation — and the pedagogy and impact strategy that
+      hold it all together.
+    </p>
+    <nav class="tabs">
+      <button data-tab="toc" onclick="showTab('toc')" class="active">Theory of Change</button>
+      <button data-tab="pedagogy" onclick="showTab('pedagogy')">Pedagogy</button>
+      <button data-tab="strategy" onclick="showTab('strategy')">Impact Strategy 2026</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <!-- ================= THEORY OF CHANGE ================= -->
+    <div class="tabpanel active" id="tab-toc">
+
+      <div class="toc-band need">
+        <span class="band-label">Need</span>
+        <p class="statement">4 million children are navigating the challenges of poverty, often without the opportunities to imagine a brighter future.</p>
+      </div>
+      <div class="toc-arrow">↓</div>
+
+      <div class="toc-band audiences">
+        <span class="band-label">iOi Audiences</span>
+        <ul>
+          <li>Children (aged between 5 and 13)</li>
+          <li>Teachers and Educators</li>
+          <li>Parents and Carers</li>
+          <li>Local Community leaders, volunteers</li>
+          <li>Partners and supporters</li>
+        </ul>
+      </div>
+      <div class="toc-arrow">↓</div>
+
+      <div class="toc-band activities">
+        <span class="band-label">iOi Activities</span>
+        <div class="toc-cols">
+          <div>
+            <h3 style="color:#fff;">Impacting Children's Lives</h3>
+            <ul>
+              <li>Programme iOi STEAM Live</li>
+              <li>Platform ImagineED</li>
+              <li>Places My Big Idea</li>
+            </ul>
+          </div>
+          <div>
+            <h3 style="color:#fff;">Impacting Learning System</h3>
+            <ul>
+              <li>Evaluation</li>
+              <li>Research</li>
+              <li>Community Building</li>
+              <li>Consulting</li>
+              <li>Thought Leadership</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="toc-arrow">↓</div>
+
+      <div class="toc-band vision">
+        <span class="band-label">Vision</span>
+        <p class="statement">For every child to have the equal opportunity and skills to imagine and achieve their fullest potential.</p>
+      </div>
+      <div class="toc-arrow">↓</div>
+
+      <div class="toc-band outputs">
+        <span class="band-label">iOi Outputs</span>
+        <div class="toc-cols">
+          <div>
+            <h3 style="color:#fff;">Impacting Children</h3>
+            <ul>
+              <li>Children</li>
+              <li>Classes</li>
+              <li>Schools</li>
+              <li>Teachers</li>
+              <li>Educators</li>
+              <li>Workshops</li>
+            </ul>
+          </div>
+          <div>
+            <h3 style="color:#fff;">Impacting the System</h3>
+            <ul>
+              <li>Evaluation</li>
+              <li>Reports</li>
+              <li>Case studies</li>
+              <li>Events</li>
+              <li>Papers</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="toc-arrow">↓</div>
+
+      <div class="toc-cols" style="margin-bottom:16px;">
+        <div class="toc-band outcomes-children" style="margin-bottom:0;">
+          <span class="band-label">iOi Outcomes — Children</span>
+          <ul>
+            <li>Creative Thinking Skills</li>
+            <li>Aspiration for the Future</li>
+            <li>Skills: 8 Competencies</li>
+            <li>Learning Through Play: Holistic skills</li>
+            <li>Qualitative stories</li>
+          </ul>
+        </div>
+        <div class="toc-band outcomes-adults" style="margin-bottom:0;">
+          <span class="band-label">iOi Outcomes — Those supporting children (teachers, carers, community leaders)</span>
+          <ul>
+            <li>The Value of Creativity as a vital skill</li>
+            <li>The confidence in creating the learning environment for Imagination</li>
+            <li>Net Promoter Score</li>
+            <li>Qualitative stories</li>
+          </ul>
+        </div>
+      </div>
+      <div class="toc-arrow">↓</div>
+
+      <div class="toc-cols">
+        <div class="toc-band mission" style="margin-bottom:0;">
+          <span class="band-label">Mission</span>
+          <p class="statement">To empower children to reimagine their future.</p>
+        </div>
+        <div class="toc-band impact" style="margin-bottom:0; color:#2A2521;">
+          <span class="band-label" style="background:rgba(0,0,0,0.12); color:#2A2521;">Our long-term impact</span>
+          <p class="statement" style="color:#2A2521;">Children develop the skills to navigate the challenges of poverty and improve their life chances.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= PEDAGOGY ================= -->
+    <div class="tabpanel" id="tab-pedagogy">
+      <h2>The Imagination Cycle 3.0</h2>
+      <p class="section-lede">
+        Three layers wrap around a single centre. <strong>Confidence</strong> statements
+        on the outside ("I [can]…"), the <strong>Child voice</strong> verb in the middle,
+        and the underpinning <strong>Pedagogy</strong> verb on the inside — all circling
+        back to <strong>Imagination</strong> itself.
+      </p>
+
+      <div class="wheel-center">Imagination</div>
+
+      <div class="layer-key">
+        <span><span class="swatch" style="background:var(--orange);"></span>Pedagogy (inner)</span>
+        <span><span class="swatch" style="background:var(--teal);"></span>Child voice (middle)</span>
+        <span><span class="swatch" style="background:var(--ink-soft);"></span>Confidence — "I [can]…" (outer)</span>
+      </div>
+
+      <div class="stage-grid">
+        <div class="stage-card" style="--stage-color:var(--pink);">
+          <div class="stage-name">Share</div>
+          <div class="stage-row">
+            <span class="stage-chip pedagogy">contribute</span>
+            <span class="stage-chip voice">show</span>
+          </div>
+          <blockquote>"I [can] show my voice and help others."</blockquote>
+        </div>
+        <div class="stage-card" style="--stage-color:#D6A700;">
+          <div class="stage-name">Curious</div>
+          <div class="stage-row">
+            <span class="stage-chip pedagogy">understand</span>
+            <span class="stage-chip voice">ask</span>
+          </div>
+          <blockquote>"I [can] wonder about everything."</blockquote>
+        </div>
+        <div class="stage-card" style="--stage-color:var(--blue);">
+          <div class="stage-name">Challenge</div>
+          <div class="stage-row">
+            <span class="stage-chip pedagogy">play</span>
+            <span class="stage-chip voice">build</span>
+          </div>
+          <blockquote>"I [can] make what I imagine."</blockquote>
+        </div>
+        <div class="stage-card" style="--stage-color:var(--red);">
+          <div class="stage-name">Explore</div>
+          <div class="stage-row">
+            <span class="stage-chip pedagogy">change</span>
+            <span class="stage-chip voice">choose</span>
+          </div>
+          <blockquote>"I [can] be brave enough to try."</blockquote>
+        </div>
+        <div class="stage-card" style="--stage-color:var(--purple);">
+          <div class="stage-name">Make</div>
+          <div class="stage-row">
+            <span class="stage-chip pedagogy">connect</span>
+            <span class="stage-chip voice">do</span>
+          </div>
+          <blockquote>"I [can] explore because I belong here."</blockquote>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= IMPACT STRATEGY 2026 ================= -->
+    <div class="tabpanel" id="tab-strategy">
+      <h2>Impact Strategy 2026</h2>
+      <p class="section-lede">
+        To demonstrate impact on people's lives, some form of data needs to be
+        collected from participants — whether that's surveys, interviews, focus
+        groups (face to face or online), personal diaries, images, a voice notes
+        app, you name it. Evaluations rightly use many of the methods used in
+        research projects.
+      </p>
+
+      <div class="consider-list">
+        <h3>Children as researchers</h3>
+        <p style="margin:0 0 16px;">Children as researchers and interviewers of each other — with a process and guidance on using mics, recording equipment and drawing as research.</p>
+        <h3>Things to consider</h3>
+        <ul>
+          <li>Measurement is usually taken after 1 day, or after weeks, of engagement — it doesn't really tell us what the programme itself achieved over time.</li>
+          <li>People want to know the details of the methodologies used, and why.</li>
+          <li>It's important to use tried-and-tested, sector-wide evaluation methods.</li>
+          <li>Aiming for more detailed case studies.</li>
+          <li>Short and relevant quotes from adults and children — covering resilience, skills, mental health, school.</li>
+          <li>Evaluation from staff and volunteers, not just participants.</li>
+        </ul>
+      </div>
+
+      <h2 style="margin-top:40px;">Roadmap</h2>
+      <p class="section-lede">Building storytelling and evaluation capability over three horizons.</p>
+      <div class="roadmap">
+        <div class="roadmap-card short">
+          <h3>Short-Term</h3>
+          <ul>
+            <li>Define what impact means for iOi.</li>
+            <li>Create a standard impact story collection form.</li>
+            <li>Adopt the STAR model for case studies.</li>
+            <li>Develop ethical storytelling guidelines.</li>
+            <li>Identify 5–10 strong impact stories already held within the organisation.</li>
+            <li>Begin collecting alumni stories.</li>
+          </ul>
+        </div>
+        <div class="roadmap-card medium">
+          <h3>Medium-Term</h3>
+          <ul>
+            <li>Develop audience-specific messaging.</li>
+            <li>Establish content pillars.</li>
+            <li>Create an impact story library.</li>
+            <li>Build an annual storytelling calendar.</li>
+          </ul>
+        </div>
+        <div class="roadmap-card long">
+          <h3>Long-Term</h3>
+          <ul>
+            <li>Embed storytelling into evaluation and participation processes.</li>
+            <li>Create a 20-year legacy campaign using stories from past participants.</li>
+            <li>Develop a sustainable content waterfall process that turns every major project into multiple pieces of content and evidence.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Frameworks — part of the iOi Evaluation Hub. Theory of Change and Imagination Cycle 3.0 as held by the Institute of Imagination; Impact Strategy 2026 in development.</p>
+  </div>
+</footer>
+
+<script>
+  function showTab(tab){
+    document.querySelectorAll('.tabpanel').forEach(function(p){ p.classList.remove('active'); });
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.querySelectorAll('nav.tabs button').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelector('nav.tabs button[data-tab="' + tab + '"]').classList.add('active');
+    history.replaceState(null, '', '#' + tab);
+  }
+  var startTab = (location.hash || '#toc').replace('#','');
+  if(document.getElementById('tab-' + startTab)){ showTab(startTab); }
+</script>
+
+</body>
+</html>
